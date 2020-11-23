@@ -1,10 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const Books = require('../models/books');
+var authenticate = require('../authenticate');
 
 const bookRouter = express.Router();
-
 bookRouter.use(bodyParser.json());
 
 bookRouter.route('/')
@@ -17,7 +16,7 @@ bookRouter.route('/')
   },(err) => next(err))
   .catch((err) => next(err) )
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Books.create(req.body)
     .then((book) => {
         console.log('Book Created ', book);
@@ -31,7 +30,7 @@ bookRouter.route('/')
     res.statusCode = 403;
     res.end('PUT operation not supported on /books');
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Books.remove({})
     .then((resp) => {
         res.statusCode = 200;
@@ -55,7 +54,7 @@ bookRouter.route('/:bookId')
   res.statusCode = 403;
   res.end('POST operation not supported on /books/'+ req.params.bookId);
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Books.findByIdAndUpdate(req.params.bookId, {
         $set: req.body
     }, { new: true })
@@ -66,7 +65,7 @@ bookRouter.route('/:bookId')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Books.findByIdAndRemove(req.params.bookId)
     .then((resp) => {
         res.statusCode = 200;
@@ -93,7 +92,7 @@ bookRouter.route('/:bookId/comments')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     Books.findById(req.params.bookId)
     .then((book) => {
         if (book != null) {
@@ -118,7 +117,7 @@ bookRouter.route('/:bookId/comments')
     res.end('PUT operation not supported on /books/'
         + req.params.bookId + '/comments');
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Books.findById(req.params.bookId)
     .then((book) => {
         if (book != null) {
@@ -168,7 +167,7 @@ bookRouter.route('/:bookId/comments/:commentId')
     res.end('POST operation not supported on /books/'+ req.params.bookId
         + '/comments/' + req.params.commentId);
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser, (req, res, next) => {
     Books.findById(req.params.bookId)
     .then((book) => {
         if (book != null && book.comments.id(req.params.commentId) != null) {
@@ -198,7 +197,7 @@ bookRouter.route('/:bookId/comments/:commentId')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser, (req, res, next) => {
     Books.findById(req.params.bookId)
     .then((book) => {
         if (book != null && book.comments.id(req.params.commentId) != null) {
