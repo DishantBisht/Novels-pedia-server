@@ -92,16 +92,24 @@ bookRouter.route('/:bookId/comments')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.post(authenticate.verifyUser, (req, res, next) => {
+.post((req, res, next) => {
+    console.log("user = " + req.user);
     Books.findById(req.params.bookId)
+    .populate('comments.author')
     .then((book) => {
         if (book != null) {
+            
+            console.log(req.body);
             book.comments.push(req.body);
             book.save()
             .then((book) => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(book);                
+                Books.findById(book._id)
+                .populate('comments.author')
+                .then((book) => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json(book);
+                })            
             }, (err) => next(err));
         }
         else {

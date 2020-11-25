@@ -13,6 +13,7 @@ var FileStore = require('session-file-store')(session);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var booksRouter = require('./routes/booksRouter');
+var feedbacksRouter = require('./routes/feedback');
 
 const uri = "mongodb+srv://Dishant:dishantbisht@cluster0.udilo.mongodb.net/novels-pedia?retryWrites=true&w=majority";
 
@@ -33,7 +34,7 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+//app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
@@ -49,6 +50,7 @@ app.use(passport.initialize());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/books/',booksRouter);
+app.use('/feedback',feedbacksRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

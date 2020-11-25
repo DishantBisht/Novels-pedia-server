@@ -3,10 +3,9 @@ var router = express.Router();
 const bodyParser = require('body-parser');
 var User = require('../models/user');
 var passport = require('passport');
-var authenticate = require('../authenticate')
+var authenticate = require('../authenticate');
 
 router.use(bodyParser.json());
-
 
 router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   User.find({}, (err, users) => {
