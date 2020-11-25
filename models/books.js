@@ -50,6 +50,10 @@ const booksSchema = new Schema({
         type: Boolean,
         default:false      
     },
+    writer:{
+        type: String,
+        required: true
+    },
     comments:[commentSchema]
 }, {
     timestamps: true
